@@ -10,6 +10,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class App {
@@ -36,11 +39,30 @@ public class App {
             InputStream inputStream = connection.getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader in = new BufferedReader(inputStreamReader);
-            String line = in.readLine();
-            while(line != null){
-                System.out.println(line);
-                line = in.readLine();
-            }
+//            String line = in.readLine();
+//            while(line != null){
+//                System.out.println(line);
+//                line = in.readLine();
+//            }
+            Reader reader =in ;
+            Gson gson0 = new Gson();
+            Api apiQuotes = gson0.fromJson(reader, Api.class);
+            System.out.println(apiQuotes.toString());
+
+            Gson gson = new Gson();
+            Reader reader2 =new BufferedReader(new FileReader("app/src/main/resources/testjson.json"));
+            Quote[] recentQuotes2 = gson.fromJson(reader2, Quote[].class);
+            List<Quote> listOfQuotes = new ArrayList<Quote>(Arrays.asList(recentQuotes2));//list of all quotes
+            Quote toConvert = new Quote(apiQuotes.getQuoteAuthor(), apiQuotes.getQuoteText());
+            listOfQuotes.add(toConvert);
+
+            FileWriter fileWriter = new FileWriter("app/src/main/resources/testjson.json");
+            BufferedWriter bw = new BufferedWriter(fileWriter);
+            Gson gson2 = new Gson();
+            String output = gson2.toJson(listOfQuotes);
+            bw.write(output);
+            bw.flush();
+            bw.close();
 
         }  catch (IOException e) {
             Gson gson = new Gson();
